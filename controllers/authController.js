@@ -90,8 +90,31 @@ const logout = (req, res) => {
   });
 };
 
+const verifyUser = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    return res.status(401).json({
+      authentication: false,
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({
+      authentication: true,
+      user: decoded,
+    });
+  } catch (error) {
+    res.status(401).json({
+      authentication: false,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
+  verifyUser,
 };
